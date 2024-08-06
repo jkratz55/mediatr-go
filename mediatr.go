@@ -86,14 +86,14 @@ func SendNotification[T any](notification T) {
 	}
 
 	for _, handler := range handlers {
-		go func() {
-			notificationHandler, ok := handler.(NotificationHandler[T])
+		go func(h interface{}) {
+			notificationHandler, ok := h.(NotificationHandler[T])
 			if !ok {
 				logger.Error("NotificationHandler type mismatch for notification type, notification will be dropped and ignored",
 					slog.String("notificationType", notificationType.String()))
 				return
 			}
 			notificationHandler.Notify(notification)
-		}()
+		}(handler)
 	}
 }
